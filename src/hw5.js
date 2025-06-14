@@ -11,27 +11,56 @@ document.body.appendChild(renderer.domElement);
 // Set background color
 scene.background = new THREE.Color(0x000000);
 
-// Add lights to the scene
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+// --- ENHANCED LIGHTING SETUP ---
+// 1. Ambient Light 
+const ambientLight = new THREE.AmbientLight(0x404040, 0.6); 
 scene.add(ambientLight);
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-directionalLight.position.set(10, 20, 10);
-directionalLight.castShadow = true;
-scene.add(directionalLight);
+// 2. Main Directional Light (Sun-like or primary stadium overhead)
+const mainDirectionalLight = new THREE.DirectionalLight(0xffffff, 0.7);
+mainDirectionalLight.position.set(15, 30, 20); 
+mainDirectionalLight.target.position.set(0, 0, 0); 
+scene.add(mainDirectionalLight);
+scene.add(mainDirectionalLight.target); 
 
-directionalLight.shadow.mapSize.set(2048, 2048);
-directionalLight.shadow.camera.near = 1;
-directionalLight.shadow.camera.far = 50;
+mainDirectionalLight.castShadow = true;
+mainDirectionalLight.shadow.mapSize.width = 2048; 
+mainDirectionalLight.shadow.mapSize.height = 2048;
+mainDirectionalLight.shadow.camera.near = 1;
+mainDirectionalLight.shadow.camera.far = 80;
+mainDirectionalLight.shadow.camera.left = -30;
+mainDirectionalLight.shadow.camera.right = 30;
+mainDirectionalLight.shadow.camera.top = 30;
+mainDirectionalLight.shadow.camera.bottom = -30;
 
-directionalLight.shadow.camera.left = -20;
-directionalLight.shadow.camera.right = 20;
-directionalLight.shadow.camera.top = 20;
-directionalLight.shadow.camera.bottom = -20;
+// 3. SpotLight (Simulating an overhead stadium light)
+const spotLight = new THREE.SpotLight(0xffffff, 1.2); 
+spotLight.position.set(0, 40, 0);
+spotLight.target.position.set(0, 0, 0); 
+spotLight.angle = Math.PI / 8; 
+spotLight.penumbra = 0.5; 
+spotLight.decay = 1; 
+spotLight.distance = 100; 
 
-// Enable shadows
+spotLight.castShadow = true;
+spotLight.shadow.mapSize.width = 2048; 
+spotLight.shadow.mapSize.height = 2048;
+spotLight.shadow.camera.near = 10;
+spotLight.shadow.camera.far = 60; 
+spotLight.shadow.camera.fov = 40; 
+
+scene.add(spotLight);
+scene.add(spotLight.target); 
+
+// 4. Another Directional Light (Fill light from opposite side)
+const fillDirectionalLight = new THREE.DirectionalLight(0xffffff, 0.3); 
+fillDirectionalLight.position.set(-15, 10, -10); 
+fillDirectionalLight.castShadow = false; 
+scene.add(fillDirectionalLight);
+
+// Enable shadows for the renderer
 renderer.shadowMap.enabled = true;
-directionalLight.castShadow = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap; 
 
 function degrees_to_radians(degrees) {
   var pi = Math.PI;
