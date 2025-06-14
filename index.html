@@ -15,11 +15,13 @@
 			position: absolute;
 			top: 20px;
 			left: 20px;
-			font-size: 1.4em;
+			font-size: clamp(1rem, 2vw, 2rem);
 			color: white;
 			background: rgba(0,0,0,0.5);
 			padding: 6px 12px;
 			border-radius: 8px;
+			font-weight: bold;
+  			text-shadow: 1px 1px 3px #000;
 			}
 
 			#controls-container {
@@ -33,8 +35,17 @@
 			border-radius: 8px;
 			line-height: 1.6em;
 			max-width: 300px;
+			border: 1px solid #fff2;
+  			box-shadow: 0 0 6px #0008;
 			}
 
+			#controls-container ul {
+			padding-left: 20px;
+			margin: 0;
+			}
+			#controls-container li {
+			margin-bottom: 6px;
+			}
 		</style>		
 		<script src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'></script>
 	</head>
@@ -43,12 +54,14 @@
 		<div id="score-container">Score: <strong><span id="score">0</span></strong></div>
 
 		<div id="controls-container">
-		<strong>Controls:</strong><br><br>
-		O - Toggle orbit camera<br>
-		Arrow Keys - Move ball<br>
-		W/S - Adjust shot power<br>
-		SPACE - Shoot ball<br>
-		R - Reset ball
+		<strong>Controls:</strong>
+		<ul>
+			<li>O – Toggle orbit camera</li>
+			<li>Arrow Keys – Move ball</li>
+			<li>W/S – Adjust shot power</li>
+			<li>SPACE – Shoot ball</li>
+			<li>R – Reset ball</li>
+		</ul>
 		</div>
 	</body>
 </html>
