@@ -68,20 +68,20 @@ function degrees_to_radians(degrees) {
 }
 
 // === MOVE HOOP CONSTANTS AND FUNCTION DEFINITION HERE ===
-const HOOP_HEIGHT = 3.05; // Regulation 10 feet in meters (approx)
+const HOOP_HEIGHT = 3.05; 
 const BACKBOARD_WIDTH = 2.4;
 const BACKBOARD_HEIGHT = 1.5;
 const RIM_RADIUS = 0.4; 
-const POLE_HEIGHT = HOOP_HEIGHT + 1.5; // Pole extends above the rim
+const POLE_HEIGHT = HOOP_HEIGHT + 1.5; 
 const POLE_RADIUS = 0.1;
 const SUPPORT_ARM_LENGTH = 1.0;
 
 // === COURT CONSTANTS ===
 const COURT_HALF_LENGTH = 15; 
 const COURT_HALF_WIDTH = 7.5
-const BASELINE_OFFSET = 1.2; // Distance from baseline to hoop center
-const LEFT_HOOP_X = -(COURT_HALF_LENGTH - BASELINE_OFFSET); // -13.8
-const RIGHT_HOOP_X = (COURT_HALF_LENGTH - BASELINE_OFFSET);    // 13.8
+const BASELINE_OFFSET = 1.2; 
+const LEFT_HOOP_X = -(COURT_HALF_LENGTH - BASELINE_OFFSET); 
+const RIGHT_HOOP_X = (COURT_HALF_LENGTH - BASELINE_OFFSET);    
 
 // Function to create a single basketball hoop
 function createBasketballHoop(xPosition) {
@@ -95,7 +95,7 @@ function createBasketballHoop(xPosition) {
   const backboardMaterial = new THREE.MeshPhongMaterial({
     color: 0xffffff, 
     transparent: true,
-    opacity: 1.0, // Partially transparent
+    opacity: 1.0, 
     shininess: 100
   });
 
@@ -118,8 +118,8 @@ function createBasketballHoop(xPosition) {
 
   const backboard = new THREE.Mesh(backboardGeometry, backboardMaterial);
   
-  // Position backboard - should be behind the rim
-  const RIM_OFFSET = 0.15; // Distance from backboard to rim
+  // Position backboard
+  const RIM_OFFSET = 0.15; 
   backboard.position.set(0, HOOP_HEIGHT + 0.5, -RIM_OFFSET);
   
   backboard.castShadow = true;
@@ -130,7 +130,7 @@ function createBasketballHoop(xPosition) {
   // Using a TorusGeometry for the rim
   const rimGeometry = new THREE.TorusGeometry(RIM_RADIUS, 0.04, 16, 64);
   const rimMaterial = new THREE.MeshPhongMaterial({
-    color: 0xff4500, // Orange
+    color: 0xff4500, 
     shininess: 80
   });
   const rim = new THREE.Mesh(rimGeometry, rimMaterial);
@@ -144,7 +144,7 @@ function createBasketballHoop(xPosition) {
 
   // 3. Chain Net Implementation
   const netMaterial = new THREE.MeshPhongMaterial({
-      color: 0xc0c0c0, // Silver/grey for metal chains
+      color: 0xc0c0c0, // Silver-grey for metal chains
       shininess: 200,
       specular: 0xffffff 
   });
@@ -195,16 +195,16 @@ function createBasketballHoop(xPosition) {
   hoopGroup.add(pole);
 
   // Support Arms (from pole to backboard)
-  const armMaterial = new THREE.MeshPhongMaterial({ color: 0x808080 }); // Gray for arms
+  const armMaterial = new THREE.MeshPhongMaterial({ color: 0x808080 }); 
   const arm1Geometry = new THREE.BoxGeometry(0.1, SUPPORT_ARM_LENGTH, 0.1);
 
   // First arm
   const arm1 = new THREE.Mesh(arm1Geometry, armMaterial);
-  arm1.rotation.z = degrees_to_radians(45); // Angle the arm
+  arm1.rotation.z = degrees_to_radians(45); 
   
   // Second arm
   const arm2 = new THREE.Mesh(arm1Geometry, armMaterial);
-  arm2.rotation.z = degrees_to_radians(-45); // Angle the arm
+  arm2.rotation.z = degrees_to_radians(-45); 
   
   arm1.position.set(0, HOOP_HEIGHT + BACKBOARD_HEIGHT / 2 + 0.2, -BACKBOARD_WIDTH / 2 + 0.2);
   arm2.position.set(0, HOOP_HEIGHT + BACKBOARD_HEIGHT / 2 - 0.2, -BACKBOARD_WIDTH / 2 + 0.2);
@@ -236,7 +236,7 @@ function createBasketballCourt() {
 
   const textureLoader = new THREE.TextureLoader();
   const woodTexture = textureLoader.load('./src/wood_texture.jpg',
-    function(loadedTexture) { // This is the onLoad callback
+    function(loadedTexture) { 
       loadedTexture.wrapS = THREE.RepeatWrapping;
       loadedTexture.wrapT = THREE.RepeatWrapping;
       loadedTexture.repeat.set(5, 5); 
@@ -244,7 +244,7 @@ function createBasketballCourt() {
       courtMaterial.needsUpdate = true; 
       console.log('Wood texture loaded successfully!');
     },
-    undefined, // onProgress
+    undefined, 
     function (err) {
       console.error('An error happened loading the wood texture:', err);
       courtMaterial.color.set(0xc68642);
@@ -266,7 +266,6 @@ function createBleachers() {
     const rowHeight = 0.5; 
     const rowDepth = 1.0;  
     const bleacherLength = COURT_HALF_LENGTH * 2 + 5; 
-    // Create bleachers along the +Z side of the court
     for (let i = 0; i < numRows; i++) {
         const rowGeometry = new THREE.BoxGeometry(bleacherLength, rowHeight, rowDepth);
         const row = new THREE.Mesh(rowGeometry, bleacherMaterial);
@@ -279,7 +278,6 @@ function createBleachers() {
         row.receiveShadow = true;
         bleacherGroup.add(row);
     }
-    // Create bleachers along the -Z side of the court (mirror of +Z)
     for (let i = 0; i < numRows; i++) {
         const rowGeometry = new THREE.BoxGeometry(bleacherLength, rowHeight, rowDepth);
         const row = new THREE.Mesh(rowGeometry, bleacherMaterial);
@@ -349,8 +347,8 @@ function createScoreboard() {
 
     // Scoreboard Logo
     const logoTextureLoader = new THREE.TextureLoader();
-    const logoPlaneWidth = boardWidth * 0.6; // Adjust size as needed
-    const logoPlaneHeight = boardHeight * 1.0; // Adjust size as needed
+    const logoPlaneWidth = boardWidth * 0.6; 
+    const logoPlaneHeight = boardHeight * 1.0; 
     logoTextureLoader.load('./src/scoreboard_logo.jpeg', 
         function(logoTexture) {
             const logoMaterial = new THREE.MeshBasicMaterial({ map: logoTexture, transparent: true });
@@ -612,8 +610,8 @@ function addBasketball() {
   const ballGeometry = new THREE.SphereGeometry(ballRadius, 32, 32);  	
   const textureLoader = new THREE.TextureLoader();
   const basketballTexture = textureLoader.load('./src/basketball_texture.jpg',
-    undefined, // onLoad
-    undefined, // onProgress
+    undefined, 
+    undefined, 
     function (err) {
       console.error('An error happened loading the basketball texture:', err);
       // Fallback to solid color if texture fails
@@ -669,6 +667,5 @@ function addBasketball() {
     ball.add(seamLine);
   }
 }
-
 
 animate();
