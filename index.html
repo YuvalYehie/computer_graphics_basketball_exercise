@@ -4,12 +4,51 @@
 		<meta charset="utf-8">
 		<title>HW5</title>
 		<style>
-			body { margin: 0; }
-		</style>
+			body {
+				margin: 0;
+				overflow: hidden;
+				font-family: Arial, sans-serif;
+				color: white;
+			}
+
+			#score-container {
+			position: absolute;
+			top: 20px;
+			left: 20px;
+			font-size: 1.4em;
+			color: white;
+			background: rgba(0,0,0,0.5);
+			padding: 6px 12px;
+			border-radius: 8px;
+			}
+
+			#controls-container {
+			position: absolute;
+			bottom: 20px;
+			left: 20px;
+			font-size: 1em;
+			color: white;
+			background: rgba(0, 0, 0, 0.5);
+			padding: 12px;
+			border-radius: 8px;
+			line-height: 1.6em;
+			max-width: 300px;
+			}
+
+		</style>		
 		<script src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'></script>
 	</head>
 	<body>
 		<script src="src/hw5.js" type="module"></script>
+		<div id="score-container">Score: <strong><span id="score">0</span></strong></div>
 
+		<div id="controls-container">
+		<strong>Controls:</strong><br><br>
+		O - Toggle orbit camera<br>
+		Arrow Keys - Move ball<br>
+		W/S - Adjust shot power<br>
+		SPACE - Shoot ball<br>
+		R - Reset ball
+		</div>
 	</body>
 </html>

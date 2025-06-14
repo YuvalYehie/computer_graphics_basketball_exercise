@@ -16,8 +16,18 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
 const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-directionalLight.position.set(10, 20, 15);
+directionalLight.position.set(10, 20, 10);
+directionalLight.castShadow = true;
 scene.add(directionalLight);
+
+directionalLight.shadow.mapSize.set(2048, 2048);
+directionalLight.shadow.camera.near = 1;
+directionalLight.shadow.camera.far = 50;
+
+directionalLight.shadow.camera.left = -20;
+directionalLight.shadow.camera.right = 20;
+directionalLight.shadow.camera.top = 20;
+directionalLight.shadow.camera.bottom = -20;
 
 // Enable shadows
 renderer.shadowMap.enabled = true;
@@ -173,6 +183,12 @@ camera.applyMatrix4(cameraTranslate);
 
 // Orbit controls
 const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.maxPolarAngle = Math.PI / 2.2;
+controls.minDistance = 10;
+controls.maxDistance = 40;
+
 let isOrbitEnabled = true;
 
 // Instructions display
@@ -184,10 +200,6 @@ instructionsElement.style.color = 'white';
 instructionsElement.style.fontSize = '16px';
 instructionsElement.style.fontFamily = 'Arial, sans-serif';
 instructionsElement.style.textAlign = 'left';
-instructionsElement.innerHTML = `
-  <h3>Controls:</h3>
-  <p>O - Toggle orbit camera</p>
-`;
 document.body.appendChild(instructionsElement);
 
 // Handle key events
