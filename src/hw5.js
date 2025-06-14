@@ -1,6 +1,6 @@
 import {OrbitControls} from './OrbitControls.js'
 
-console.log("HW5 script is running and updated!");
+console.log("HW5 script is running and updated");
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -39,25 +39,28 @@ const SUPPORT_ARM_LENGTH = 1.0;
 
 // Function to create a single basketball hoop
 function createBasketballHoop(xPosition) {
-  // 1. Backboard (white, partially transparent)
   const hoopGroup = new THREE.Group();
+  
+  // Determine if this is the right side hoop
+  const isRightSide = xPosition > 0;
+  
+  // 1. Backboard (white, partially transparent)
   const backboardGeometry = new THREE.BoxGeometry(BACKBOARD_WIDTH, BACKBOARD_HEIGHT, 0.05);
   const backboardMaterial = new THREE.MeshPhongMaterial({
     color: 0xffffff, // White
     transparent: true,
-    opacity: 0.7, // Partially transparent
+    opacity: 1.0, // Partially transparent
     shininess: 100
   });
   const backboard = new THREE.Mesh(backboardGeometry, backboardMaterial);
-  const RIM_OFFSET = 0.5;
-  backboard.position.set(0, HOOP_HEIGHT + 0.5, 0);
+  
+  // Position backboard - should be behind the rim
+  const RIM_OFFSET = 0.15; // Distance from backboard to rim
+  backboard.position.set(0, HOOP_HEIGHT + 0.5, -RIM_OFFSET);
+  
   backboard.castShadow = true;
   backboard.receiveShadow = true;
   hoopGroup.add(backboard);
-  if (xPosition > 0) {
-  hoopGroup.rotation.y = Math.PI;
-  }
-
 
   // 2. Rim (orange) at the correct regulation height
   // Using a TorusGeometry for the rim
@@ -68,7 +71,10 @@ function createBasketballHoop(xPosition) {
   });
   const rim = new THREE.Mesh(rimGeometry, rimMaterial);
   rim.rotation.x = Math.PI / 2; // Rotate to be horizontal
-  rim.position.set(0, HOOP_HEIGHT, -RIM_OFFSET);
+  
+  // Position rim in front of backboard
+  rim.position.set(0, HOOP_HEIGHT, RIM_OFFSET);
+  
   rim.castShadow = true;
   hoopGroup.add(rim);
 
@@ -84,12 +90,12 @@ function createBasketballHoop(xPosition) {
     const x = Math.cos(angle) * RIM_RADIUS;
     const z = Math.sin(angle) * RIM_RADIUS;
 
-    netPoints.push(new THREE.Vector3(x, HOOP_HEIGHT, -RIM_OFFSET + z));
-    netPoints.push(new THREE.Vector3(x * 0.5, HOOP_HEIGHT - netDepth, -RIM_OFFSET + z * 0.5));
+    netPoints.push(new THREE.Vector3(x, HOOP_HEIGHT, RIM_OFFSET + z));
+    netPoints.push(new THREE.Vector3(x * 0.5, HOOP_HEIGHT - netDepth, RIM_OFFSET + z * 0.5));
   }
 
   const netGeometry = new THREE.BufferGeometry().setFromPoints(netPoints);
-  const net = new THREE.LineSegments(netGeometry, netMaterial); // Use LineSegments for disconnected lines
+  const net = new THREE.LineSegments(netGeometry, netMaterial);
   hoopGroup.add(net);
 
   // 4. Support structure (pole and arms) correctly positioned behind the backboard
@@ -97,33 +103,43 @@ function createBasketballHoop(xPosition) {
   const poleGeometry = new THREE.CylinderGeometry(POLE_RADIUS, POLE_RADIUS, POLE_HEIGHT, 32);
   const poleMaterial = new THREE.MeshPhongMaterial({ color: 0x808080 }); // Gray
   const pole = new THREE.Mesh(poleGeometry, poleMaterial);
-  pole.position.set(0, POLE_HEIGHT / 2, BACKBOARD_WIDTH / 2);
+  
+  // Position pole behind backboard
+  pole.position.set(0, POLE_HEIGHT / 2, -BACKBOARD_WIDTH / 2);
+  
   pole.castShadow = true;
   pole.receiveShadow = true;
   hoopGroup.add(pole);
 
-  // Support Arm (from pole to backboard)
+  // Support Arms (from pole to backboard)
   const armMaterial = new THREE.MeshPhongMaterial({ color: 0x808080 }); // Gray for arms
+  const arm1Geometry = new THREE.BoxGeometry(0.1, SUPPORT_ARM_LENGTH, 0.1);
 
   // First arm
-  const arm1Geometry = new THREE.BoxGeometry(0.1, SUPPORT_ARM_LENGTH, 0.1);
   const arm1 = new THREE.Mesh(arm1Geometry, armMaterial);
   arm1.rotation.z = degrees_to_radians(45); // Angle the arm
-  arm1.position.set(0, HOOP_HEIGHT + BACKBOARD_HEIGHT / 2 + 0.2, BACKBOARD_WIDTH / 2 - 0.2);
+  
+  // Second arm
+  const arm2 = new THREE.Mesh(arm1Geometry, armMaterial);
+  arm2.rotation.z = degrees_to_radians(-45); // Angle the arm
+  
+  arm1.position.set(0, HOOP_HEIGHT + BACKBOARD_HEIGHT / 2 + 0.2, -BACKBOARD_WIDTH / 2 + 0.2);
+  arm2.position.set(0, HOOP_HEIGHT + BACKBOARD_HEIGHT / 2 - 0.2, -BACKBOARD_WIDTH / 2 + 0.2);
+  
   arm1.castShadow = true;
   arm1.receiveShadow = true;
-  hoopGroup.add(arm1);
-
-  // Second arm
-  const arm2 = new THREE.Mesh(arm1Geometry, armMaterial); // Reusing geometry for efficiency
-  arm2.rotation.z = degrees_to_radians(-45); // Angle the arm
-  arm2.position.set(0, HOOP_HEIGHT + BACKBOARD_HEIGHT / 2 - 0.2, BACKBOARD_WIDTH / 2 - 0.2);
   arm2.castShadow = true;
   arm2.receiveShadow = true;
+  
+  hoopGroup.add(arm1);
   hoopGroup.add(arm2);
 
   hoopGroup.position.set(xPosition, 0, 0);
+
+  hoopGroup.lookAt(new THREE.Vector3(0, HOOP_HEIGHT / 2, 0)); 
+  
   scene.add(hoopGroup);
+  return hoopGroup;
 }
 
 
@@ -146,8 +162,8 @@ function createBasketballCourt() {
 // Create all elements
 createBasketballCourt();
 addCourtMarkings();
-createBasketballHoop(-13.5);
-createBasketballHoop(13.5);
+createBasketballHoop(-13.5); // Left hoop
+createBasketballHoop(13.5);    // Right hoop
 
 // Set camera position for better view
 const cameraTranslate = new THREE.Matrix4();
