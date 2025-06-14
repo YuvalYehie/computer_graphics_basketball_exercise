@@ -58,3 +58,19 @@ Clean CSS styling
 - Access at http://localhost:8000 in your web browser
 
 - The images must be placed in the src directory. If missing, a fallback is used.
+
+## Screenshots
+![Overall view of the basketball court with hoops](screenshots/Overall_view.png)
+
+![Overall view 2 of the basketball court with hoops](screenshots/Overall_view2.png)
+
+![Close-up view of basketball hoop 1 with nets](screenshots/basketball_hoop1.png)
+
+![Close-up view of basketball hoop 2 with nets](screenshots/basketball_hoop2.png)
+
+![View showing the basketball positioned at center court](screenshots/basketball_positioned.png)
+
+![View demonstrating camera controls functionality](screenshots/camera_controls_functionality.png)
+
+
+
