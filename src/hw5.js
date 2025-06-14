@@ -90,14 +90,32 @@ function createBasketballHoop(xPosition) {
   // Determine if this is the right side hoop
   const isRightSide = xPosition > 0;
   
-  // 1. Backboard (white, partially transparent)
+  // 1. Backboard 
   const backboardGeometry = new THREE.BoxGeometry(BACKBOARD_WIDTH, BACKBOARD_HEIGHT, 0.05);
   const backboardMaterial = new THREE.MeshPhongMaterial({
-    color: 0xffffff, // White
+    color: 0xffffff, 
     transparent: true,
     opacity: 1.0, // Partially transparent
     shininess: 100
   });
+
+ const backboardTextureLoader = new THREE.TextureLoader();
+  backboardTextureLoader.load('./src/backboard_logo.jpeg', 
+      function(loadedTexture) {
+          backboardMaterial.map = loadedTexture;
+          backboardMaterial.needsUpdate = true;
+          console.log('Backboard texture loaded successfully!');
+      },
+      undefined, 
+      function(err) {
+          console.error('An error happened loading the backboard texture:', err);
+          // Fallback to a different color or pattern if texture fails
+          backboardMaterial.color.set(0xcccccc); 
+          backboardMaterial.needsUpdate = true;
+          console.log('Using fallback color for backboard due to texture loading error.');
+      }
+  );
+
   const backboard = new THREE.Mesh(backboardGeometry, backboardMaterial);
   
   // Position backboard - should be behind the rim
@@ -124,25 +142,44 @@ function createBasketballHoop(xPosition) {
   rim.castShadow = true;
   hoopGroup.add(rim);
 
-  // 3. Net implemented with line segments
-  const netMaterial = new THREE.LineBasicMaterial({ color: 0xffffff }); // White net
-  const netSegments = 20; // Number of vertical segments for the net
-  const netDepth = 0.7; // How far the net hangs down
+  // 3. Chain Net Implementation
+  const netMaterial = new THREE.MeshPhongMaterial({
+      color: 0xc0c0c0, // Silver/grey for metal chains
+      shininess: 200,
+      specular: 0xffffff 
+  });
 
-  // Create points for the net
-  const netPoints = [];
-  for (let i = 0; i < netSegments; i++) {
-    const angle = (i / netSegments) * Math.PI * 2;
-    const x = Math.cos(angle) * RIM_RADIUS;
-    const z = Math.sin(angle) * RIM_RADIUS;
+  const netDepth = 0.7; 
+  const numVerticalStrands = 24; 
+  const numHorizontalRings = 5; 
 
-    netPoints.push(new THREE.Vector3(x, HOOP_HEIGHT, RIM_OFFSET + z));
-    netPoints.push(new THREE.Vector3(x * 0.5, HOOP_HEIGHT - netDepth, RIM_OFFSET + z * 0.5));
+  // Vertical strands (thin cylinders)
+  for (let i = 0; i < numVerticalStrands; i++) {
+      const angle = (i / numVerticalStrands) * Math.PI * 2;
+      const x_start = rim.position.x + Math.cos(angle) * RIM_RADIUS;
+      const z_start = rim.position.z + Math.sin(angle) * RIM_RADIUS;
+
+      const strandGeometry = new THREE.CylinderGeometry(0.01, 0.005, netDepth, 8);
+      const strand = new THREE.Mesh(strandGeometry, netMaterial);
+      strand.position.set(x_start, HOOP_HEIGHT - netDepth / 2, z_start);
+      strand.castShadow = true;
+      strand.receiveShadow = true;
+      hoopGroup.add(strand);
   }
 
-  const netGeometry = new THREE.BufferGeometry().setFromPoints(netPoints);
-  const net = new THREE.LineSegments(netGeometry, netMaterial);
-  hoopGroup.add(net);
+  // Horizontal rings
+  for (let i = 1; i <= numHorizontalRings; i++) {
+      const y_position = HOOP_HEIGHT - (netDepth / numHorizontalRings) * i;
+      const currentRadius = RIM_RADIUS * (1 - (i / numHorizontalRings) * 0.3); 
+
+      const ringGeometry = new THREE.TorusGeometry(currentRadius, 0.01, 8, 32);
+      const ring = new THREE.Mesh(ringGeometry, netMaterial);
+      ring.rotation.x = Math.PI / 2; 
+      ring.position.set(rim.position.x, y_position, rim.position.z);
+      ring.castShadow = true;
+      ring.receiveShadow = true;
+      hoopGroup.add(ring);
+  }
 
   // 4. Support structure (pole and arms) correctly positioned behind the backboard
   // Pole
@@ -309,6 +346,26 @@ function createScoreboard() {
     const screen = new THREE.Mesh(screenGeometry, screenMaterial);
     screen.position.set(0, boardHeight * 0.05, -boardThickness * 0.5); 
     scoreboardGroup.add(screen);
+
+    // Scoreboard Logo
+    const logoTextureLoader = new THREE.TextureLoader();
+    const logoPlaneWidth = boardWidth * 0.6; // Adjust size as needed
+    const logoPlaneHeight = boardHeight * 1.0; // Adjust size as needed
+    logoTextureLoader.load('./src/scoreboard_logo.jpeg', 
+        function(logoTexture) {
+            const logoMaterial = new THREE.MeshBasicMaterial({ map: logoTexture, transparent: true });
+            const logoGeometry = new THREE.PlaneGeometry(logoPlaneWidth, logoPlaneHeight);
+            const logoMesh = new THREE.Mesh(logoGeometry, logoMaterial);
+            logoMesh.position.set(0, boardHeight * 0.8, boardThickness / 2 + 0.01);
+            scoreboardGroup.add(logoMesh);
+            console.log('Scoreboard logo loaded successfully!');
+        },
+        undefined, 
+        function(err) {
+            console.error('An error happened loading the scoreboard logo:', err);
+        }
+    );
+
     // Support poles 
     const poleRadius = 0.15;
     const poleHeight = 12; 
