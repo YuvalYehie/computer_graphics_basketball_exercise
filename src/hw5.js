@@ -192,12 +192,123 @@ function createBasketballCourt() {
   scene.add(court);
 }
 
+// Function to create bleacher sections
+function createBleachers() {
+    const bleacherGroup = new THREE.Group();
+    const bleacherMaterial = new THREE.MeshPhongMaterial({ color: 0x333333, shininess: 30 }); 
+    const numRows = 4;
+    const rowHeight = 0.5; 
+    const rowDepth = 1.0;  
+    const bleacherLength = COURT_HALF_LENGTH * 2 + 5; 
+    // Create bleachers along the +Z side of the court
+    for (let i = 0; i < numRows; i++) {
+        const rowGeometry = new THREE.BoxGeometry(bleacherLength, rowHeight, rowDepth);
+        const row = new THREE.Mesh(rowGeometry, bleacherMaterial);
+        row.position.set(
+            0,
+            (i * rowHeight) + rowHeight / 2 + 0.1, 
+            COURT_HALF_WIDTH + (i * rowDepth) + rowDepth / 2 + 1
+        );
+        row.castShadow = true;
+        row.receiveShadow = true;
+        bleacherGroup.add(row);
+    }
+    // Create bleachers along the -Z side of the court (mirror of +Z)
+    for (let i = 0; i < numRows; i++) {
+        const rowGeometry = new THREE.BoxGeometry(bleacherLength, rowHeight, rowDepth);
+        const row = new THREE.Mesh(rowGeometry, bleacherMaterial);
+        row.position.set(
+            0,
+            (i * rowHeight) + rowHeight / 2 + 0.1,
+            -(COURT_HALF_WIDTH + (i * rowDepth) + rowDepth / 2 + 1)
+        );
+        row.castShadow = true;
+        row.receiveShadow = true;
+        bleacherGroup.add(row);
+    }
+    const endBleacherWidth = COURT_HALF_WIDTH * 2 + 5;
+    const endBleacherDepth = 0.8;
+    const numEndRows = 3;
+    // Behind left hoop
+    for (let i = 0; i < numEndRows; i++) {
+        const rowGeometry = new THREE.BoxGeometry(endBleacherDepth, rowHeight, endBleacherWidth);
+        const row = new THREE.Mesh(rowGeometry, bleacherMaterial);
+        row.position.set(
+            -COURT_HALF_LENGTH - (i * endBleacherDepth) - endBleacherDepth / 2 - 1, 
+            (i * rowHeight) + rowHeight / 2 + 0.1,
+            0
+        );
+        row.castShadow = true;
+        row.receiveShadow = true;
+        bleacherGroup.add(row);
+    }
+    // Behind right hoop
+    for (let i = 0; i < numEndRows; i++) {
+        const rowGeometry = new THREE.BoxGeometry(endBleacherDepth, rowHeight, endBleacherWidth);
+        const row = new THREE.Mesh(rowGeometry, bleacherMaterial);
+        row.position.set(
+            COURT_HALF_LENGTH + (i * endBleacherDepth) + endBleacherDepth / 2 + 1, 
+            (i * rowHeight) + rowHeight / 2 + 0.1,
+            0
+        );
+        row.castShadow = true;
+        row.receiveShadow = true;
+        bleacherGroup.add(row);
+    }
+    scene.add(bleacherGroup);
+}
+
+// Function to create a scoreboard
+function createScoreboard() {
+    const scoreboardGroup = new THREE.Group();
+    const boardWidth = 10;
+    const boardHeight = 5;
+    const boardThickness = 0.2;
+    const boardMaterial = new THREE.MeshPhongMaterial({ color: 0x222222, shininess: 10 });
+    // Main board
+    const mainBoardGeometry = new THREE.BoxGeometry(boardWidth, boardHeight, boardThickness);
+    const mainBoard = new THREE.Mesh(mainBoardGeometry, boardMaterial);
+    mainBoard.position.set(0, boardHeight / 2, 0); 
+    mainBoard.castShadow = true;
+    mainBoard.receiveShadow = true;
+    scoreboardGroup.add(mainBoard);
+    // Screen display 
+    const screenWidth = boardWidth * 0.9;
+    const screenHeight = boardHeight * 0.7;
+    const screenGeometry = new THREE.BoxGeometry(screenWidth, screenHeight, boardThickness * 0.5);
+    const screenMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 }); 
+    const screen = new THREE.Mesh(screenGeometry, screenMaterial);
+    screen.position.set(0, boardHeight * 0.05, -boardThickness * 0.5); 
+    scoreboardGroup.add(screen);
+    // Support poles 
+    const poleRadius = 0.15;
+    const poleHeight = 12; 
+    const poleMaterial = new THREE.MeshPhongMaterial({ color: 0x808080 });
+    const pole1Geometry = new THREE.CylinderGeometry(poleRadius, poleRadius, poleHeight, 32);
+    const pole1 = new THREE.Mesh(pole1Geometry, poleMaterial);
+    pole1.position.set(-boardWidth / 3, poleHeight / 2, 0); 
+    pole1.castShadow = true;
+    pole1.receiveShadow = true;
+    scoreboardGroup.add(pole1);
+    const pole2 = new THREE.Mesh(pole1Geometry, poleMaterial); 
+    pole2.position.set(boardWidth / 3, poleHeight / 2, 0); 
+    pole2.castShadow = true;
+    pole2.receiveShadow = true;
+    scoreboardGroup.add(pole2);
+    // Position the entire scoreboard group
+    scoreboardGroup.position.set(0, POLE_HEIGHT + 2, -COURT_HALF_WIDTH - 6); 
+    scoreboardGroup.rotation.y = Math.PI;
+    scene.add(scoreboardGroup);
+}
+
 // Create all elements
 createBasketballCourt();
 addCourtMarkings();
-createBasketballHoop(-13.5); // Left hoop
-createBasketballHoop(13.5);    // Right hoop
+createBasketballHoop(-13.5);
+createBasketballHoop(13.5);    
 addBasketball();
+createBleachers();
+createScoreboard();
 
 // Set camera position for better view
 const cameraTranslate = new THREE.Matrix4();
