@@ -164,6 +164,7 @@ createBasketballCourt();
 addCourtMarkings();
 createBasketballHoop(-13.5); // Left hoop
 createBasketballHoop(13.5);    // Right hoop
+addBasketball();
 
 // Set camera position for better view
 const cameraTranslate = new THREE.Matrix4();
@@ -269,5 +270,59 @@ function addCourtMarkings() {
   scene.add(leftArc);
   scene.add(rightArc);
 }
+
+function addBasketball() {
+  const ballRadius = 0.30;
+
+  // Ball geometry and material
+  const ballGeometry = new THREE.SphereGeometry(ballRadius, 32, 32);
+  const ballMaterial = new THREE.MeshPhongMaterial({
+    color: 0xff8c00, // Orange
+    shininess: 60
+  });
+  const ball = new THREE.Mesh(ballGeometry, ballMaterial);
+  ball.castShadow = true;
+
+  // Position it at center court
+  ball.position.set(0, 2.0, 0);
+  scene.add(ball);
+
+  // Add black seams (3 circles: equator + 2 longitude)
+  const seamMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
+  const seamSegments = 64;
+
+  // Horizontal seam (equator)
+  const equator = new THREE.BufferGeometry();
+  const eqPoints = [];
+  for (let i = 0; i <= seamSegments; i++) {
+    const theta = (i / seamSegments) * 2 * Math.PI;
+    eqPoints.push(new THREE.Vector3(
+      Math.cos(theta) * ballRadius,
+      0,
+      Math.sin(theta) * ballRadius
+    ));
+  }
+  equator.setFromPoints(eqPoints);
+  const equatorLine = new THREE.LineLoop(equator, seamMaterial);
+  ball.add(equatorLine);
+
+  // Vertical seams (longitude)
+  for (let angle = 0; angle <= Math.PI; angle += Math.PI) {
+    const seam = new THREE.BufferGeometry();
+    const seamPoints = [];
+    for (let i = 0; i <= seamSegments; i++) {
+      const phi = (i / seamSegments) * Math.PI;
+      seamPoints.push(new THREE.Vector3(
+        Math.sin(phi) * Math.cos(angle) * ballRadius,
+        Math.cos(phi) * ballRadius,
+        Math.sin(phi) * Math.sin(angle) * ballRadius
+      ));
+    }
+    seam.setFromPoints(seamPoints);
+    const seamLine = new THREE.Line(seam, seamMaterial);
+    ball.add(seamLine);
+  }
+}
+
 
 animate();
