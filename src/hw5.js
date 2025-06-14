@@ -162,18 +162,34 @@ function createBasketballHoop(xPosition) {
 
 // Create basketball court
 function createBasketballCourt() {
-  // Court floor - just a simple brown surface
   const courtGeometry = new THREE.BoxGeometry(30, 0.2, 15);
   const courtMaterial = new THREE.MeshPhongMaterial({
-    color: 0xc68642,  // Brown wood color
+    color: 0xc68642,  // Fallback brown wood color
     shininess: 50
   });
+
+  const textureLoader = new THREE.TextureLoader();
+  const woodTexture = textureLoader.load('./src/wood_texture.jpg',
+    function(loadedTexture) { // This is the onLoad callback
+      loadedTexture.wrapS = THREE.RepeatWrapping;
+      loadedTexture.wrapT = THREE.RepeatWrapping;
+      loadedTexture.repeat.set(5, 5); 
+      courtMaterial.map = loadedTexture; 
+      courtMaterial.needsUpdate = true; 
+      console.log('Wood texture loaded successfully!');
+    },
+    undefined, // onProgress
+    function (err) {
+      console.error('An error happened loading the wood texture:', err);
+      courtMaterial.color.set(0xc68642);
+      courtMaterial.needsUpdate = true; 
+      console.log('Using fallback color for court due to texture loading error.');
+    }
+  );
+
   const court = new THREE.Mesh(courtGeometry, courtMaterial);
   court.receiveShadow = true;
   scene.add(court);
-
-  // Note: All court lines, hoops, and other elements have been removed
-  // Students will need to implement these features
 }
 
 // Create all elements
@@ -242,6 +258,7 @@ function addCourtMarkings() {
     new THREE.Vector3(COURT_HALF_LENGTH, 0.11, -COURT_HALF_WIDTH),
     new THREE.Vector3(COURT_HALF_LENGTH, 0.11, COURT_HALF_WIDTH)
   ]), lineMaterial));
+
   // Sidelines
   scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
     new THREE.Vector3(-COURT_HALF_LENGTH, 0.11, -COURT_HALF_WIDTH),
@@ -281,9 +298,9 @@ function addCourtMarkings() {
 
   // Three-Point Arcs (left and right)
   const arcRadius = 6.75;
-  const threePointLineStraightZ = COURT_HALF_WIDTH - 3; // 4.5m from center Z-axis (court width 15m / 2 - 3m from sideline)
+  const threePointLineStraightZ = COURT_HALF_WIDTH - 3; 
   const arcSegments = 100;
-  const arcAngle = Math.PI / 1.3; // narrower arc
+  const arcAngle = Math.PI / 1.3; 
   const leftArcPoints = [];
   const rightArcPoints = [];
 
@@ -310,33 +327,32 @@ function addCourtMarkings() {
   scene.add(leftArc);
   scene.add(rightArc);
 
-  // Bonus: 
  // Key / Paint Area (Free Throw Lane)
-  const paintWidth = 4.9; // Width of the key
-  const paintLength = 5.8; // Length of the key from baseline to free throw line
-  const freeThrowCircleRadius = 1.8; // Radius of the free throw circle
+  const paintWidth = 4.9; 
+  const paintLength = 5.8;
+  const freeThrowCircleRadius = 1.8; 
 
-  // Left Key (near -X side of the court)
-  const leftFreeThrowLineX = -COURT_HALF_LENGTH + paintLength; // X = -15 + 5.8 = -9.2
+  // Left Key
+  const leftFreeThrowLineX = -COURT_HALF_LENGTH + paintLength; 
 
   const leftKeyPoints = [
     new THREE.Vector3(-COURT_HALF_LENGTH, 0.11, -paintWidth / 2),
     new THREE.Vector3(-COURT_HALF_LENGTH, 0.11, paintWidth / 2),
     new THREE.Vector3(leftFreeThrowLineX, 0.11, paintWidth / 2),
     new THREE.Vector3(leftFreeThrowLineX, 0.11, -paintWidth / 2),
-    new THREE.Vector3(-COURT_HALF_LENGTH, 0.11, -paintWidth / 2) // Close the rectangle
+    new THREE.Vector3(-COURT_HALF_LENGTH, 0.11, -paintWidth / 2) 
   ];
   scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(leftKeyPoints), lineMaterial));
 
-  // Right Key (near +X side of the court)
-  const rightFreeThrowLineX = COURT_HALF_LENGTH - paintLength; // X = 15 - 5.8 = 9.2
+  // Right Key 
+  const rightFreeThrowLineX = COURT_HALF_LENGTH - paintLength; 
 
   const rightKeyPoints = [
     new THREE.Vector3(COURT_HALF_LENGTH, 0.11, -paintWidth / 2),
     new THREE.Vector3(COURT_HALF_LENGTH, 0.11, paintWidth / 2),
     new THREE.Vector3(rightFreeThrowLineX, 0.11, paintWidth / 2),
     new THREE.Vector3(rightFreeThrowLineX, 0.11, -paintWidth / 2),
-    new THREE.Vector3(COURT_HALF_LENGTH, 0.11, -paintWidth / 2) // Close the rectangle
+    new THREE.Vector3(COURT_HALF_LENGTH, 0.11, -paintWidth / 2) 
   ];
   scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(rightKeyPoints), lineMaterial));
 
@@ -346,62 +362,70 @@ function addCourtMarkings() {
   // Left Free Throw Arc (centered on the free throw line at Z=0)
   const leftFTArcPoints = [];
   for (let i = 0; i <= freeThrowArcSegments; i++) {
-    const theta = (i / freeThrowArcSegments) * Math.PI; // Half circle (from 0 to PI)
+    const theta = (i / freeThrowArcSegments) * Math.PI; 
     leftFTArcPoints.push(new THREE.Vector3(
-      leftFreeThrowLineX, // X-coordinate of the free-throw line
+      leftFreeThrowLineX, 
       0.11,
-      Math.cos(theta) * freeThrowCircleRadius // Z-coordinate from center (0)
+      Math.cos(theta) * freeThrowCircleRadius 
     ));
   }
   scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(leftFTArcPoints), lineMaterial));
 
 
-  // Right Free Throw Arc (centered on the free throw line at Z=0)
+  // Right Free Throw Arc 
   const rightFTArcPoints = [];
   for (let i = 0; i <= freeThrowArcSegments; i++) {
-    const theta = (i / freeThrowArcSegments) * Math.PI; // Half circle (from 0 to PI)
+    const theta = (i / freeThrowArcSegments) * Math.PI; 
     rightFTArcPoints.push(new THREE.Vector3(
-      rightFreeThrowLineX, // X-coordinate of the free-throw line
+      rightFreeThrowLineX, 
       0.11,
-      Math.cos(theta) * freeThrowCircleRadius // Z-coordinate from center (0)
+      Math.cos(theta) * freeThrowCircleRadius 
     ));
   }
   scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(rightFTArcPoints), lineMaterial));
 
-  // No-charge semi-circle (restricted area arc)
-  const noChargeRadius = 1.25; // 1.25m from the center of the hoop
+  const noChargeRadius = 1.25; 
   const noChargeSegments = 30;
 
-  // Left No-Charge Semi-Circle
-  // Centered at the hoop's X position, Z=0
   const leftNoChargeArcPoints = [];
-  for (let i = -Math.PI / 2; i <= Math.PI / 2; i += Math.PI / noChargeSegments) { // Arc from -90 to +90 degrees
+  for (let i = -Math.PI / 2; i <= Math.PI / 2; i += Math.PI / noChargeSegments) {
     leftNoChargeArcPoints.push(new THREE.Vector3(
-      LEFT_HOOP_X + Math.cos(i) * noChargeRadius, // X coord: X_hoop + radius * cos(angle)
+      LEFT_HOOP_X + Math.cos(i) * noChargeRadius, 
       0.11,
-      Math.sin(i) * noChargeRadius // Z coord: radius * sin(angle)
+      Math.sin(i) * noChargeRadius
     ));
   }
   scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(leftNoChargeArcPoints), lineMaterial));
 
-  // Right No-Charge Semi-Circle
   const rightNoChargeArcPoints = [];
-  for (let i = -Math.PI / 2; i <= Math.PI / 2; i += Math.PI / noChargeSegments) { // Arc from -90 to +90 degrees
+  for (let i = -Math.PI / 2; i <= Math.PI / 2; i += Math.PI / noChargeSegments) { 
     rightNoChargeArcPoints.push(new THREE.Vector3(
-      RIGHT_HOOP_X - Math.cos(i) * noChargeRadius, // X coord: X_hoop - radius * cos(angle) (mirrored)
+      RIGHT_HOOP_X - Math.cos(i) * noChargeRadius,
       0.11,
-      Math.sin(i) * noChargeRadius // Z coord
+      Math.sin(i) * noChargeRadius 
     ));
   }
   scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(rightNoChargeArcPoints), lineMaterial));
 }
 
 function addBasketball() {
-  const ballRadius = 0.30;
 
+  const ballRadius = 0.30;
   // Ball geometry and material
-  const ballGeometry = new THREE.SphereGeometry(ballRadius, 32, 32);
+  const ballGeometry = new THREE.SphereGeometry(ballRadius, 32, 32);  	
+  const textureLoader = new THREE.TextureLoader();
+  const basketballTexture = textureLoader.load('./src/basketball_texture.jpg',
+    undefined, // onLoad
+    undefined, // onProgress
+    function (err) {
+      console.error('An error happened loading the basketball texture:', err);
+      // Fallback to solid color if texture fails
+      basketballMaterial.color.set(0xff8c00);
+    }
+  );
+
   const ballMaterial = new THREE.MeshPhongMaterial({
+    map: basketballTexture,
     color: 0xff8c00, // Orange
     shininess: 60
   });
