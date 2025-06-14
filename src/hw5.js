@@ -47,6 +47,13 @@ const POLE_HEIGHT = HOOP_HEIGHT + 1.5; // Pole extends above the rim
 const POLE_RADIUS = 0.1;
 const SUPPORT_ARM_LENGTH = 1.0;
 
+// === COURT CONSTANTS ===
+const COURT_HALF_LENGTH = 15; 
+const COURT_HALF_WIDTH = 7.5
+const BASELINE_OFFSET = 1.2; // Distance from baseline to hoop center
+const LEFT_HOOP_X = -(COURT_HALF_LENGTH - BASELINE_OFFSET); // -13.8
+const RIGHT_HOOP_X = (COURT_HALF_LENGTH - BASELINE_OFFSET);    // 13.8
+
 // Function to create a single basketball hoop
 function createBasketballHoop(xPosition) {
   const hoopGroup = new THREE.Group();
@@ -225,6 +232,26 @@ function animate() {
 function addCourtMarkings() {
   const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
 
+  // Outer Court Lines (Baselines and Sidelines)
+  // Baselines
+  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(-COURT_HALF_LENGTH, 0.11, -COURT_HALF_WIDTH),
+    new THREE.Vector3(-COURT_HALF_LENGTH, 0.11, COURT_HALF_WIDTH)
+  ]), lineMaterial));
+  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(COURT_HALF_LENGTH, 0.11, -COURT_HALF_WIDTH),
+    new THREE.Vector3(COURT_HALF_LENGTH, 0.11, COURT_HALF_WIDTH)
+  ]), lineMaterial));
+  // Sidelines
+  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(-COURT_HALF_LENGTH, 0.11, -COURT_HALF_WIDTH),
+    new THREE.Vector3(COURT_HALF_LENGTH, 0.11, -COURT_HALF_WIDTH)
+  ]), lineMaterial));
+  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(-COURT_HALF_LENGTH, 0.11, COURT_HALF_WIDTH),
+    new THREE.Vector3(COURT_HALF_LENGTH, 0.11, COURT_HALF_WIDTH)
+  ]), lineMaterial));
+
   // Center Line
   const centerLineGeometry = new THREE.BufferGeometry().setFromPoints([
     new THREE.Vector3(0, 0.11, -7.5),
@@ -254,12 +281,13 @@ function addCourtMarkings() {
 
   // Three-Point Arcs (left and right)
   const arcRadius = 6.75;
+  const threePointLineStraightZ = COURT_HALF_WIDTH - 3; // 4.5m from center Z-axis (court width 15m / 2 - 3m from sideline)
   const arcSegments = 100;
   const arcAngle = Math.PI / 1.3; // narrower arc
   const leftArcPoints = [];
   const rightArcPoints = [];
 
-  for (let i = -arcAngle / 2; i <= arcAngle / 2; i += arcAngle / arcSegments) {
+    for (let i = -arcAngle / 2; i <= arcAngle / 2; i += arcAngle / arcSegments) {
     leftArcPoints.push(new THREE.Vector3(
       Math.cos(-i) * arcRadius - 15,  // left side
       0.11,
@@ -281,6 +309,91 @@ function addCourtMarkings() {
 
   scene.add(leftArc);
   scene.add(rightArc);
+
+  // Bonus: 
+ // Key / Paint Area (Free Throw Lane)
+  const paintWidth = 4.9; // Width of the key
+  const paintLength = 5.8; // Length of the key from baseline to free throw line
+  const freeThrowCircleRadius = 1.8; // Radius of the free throw circle
+
+  // Left Key (near -X side of the court)
+  const leftFreeThrowLineX = -COURT_HALF_LENGTH + paintLength; // X = -15 + 5.8 = -9.2
+
+  const leftKeyPoints = [
+    new THREE.Vector3(-COURT_HALF_LENGTH, 0.11, -paintWidth / 2),
+    new THREE.Vector3(-COURT_HALF_LENGTH, 0.11, paintWidth / 2),
+    new THREE.Vector3(leftFreeThrowLineX, 0.11, paintWidth / 2),
+    new THREE.Vector3(leftFreeThrowLineX, 0.11, -paintWidth / 2),
+    new THREE.Vector3(-COURT_HALF_LENGTH, 0.11, -paintWidth / 2) // Close the rectangle
+  ];
+  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(leftKeyPoints), lineMaterial));
+
+  // Right Key (near +X side of the court)
+  const rightFreeThrowLineX = COURT_HALF_LENGTH - paintLength; // X = 15 - 5.8 = 9.2
+
+  const rightKeyPoints = [
+    new THREE.Vector3(COURT_HALF_LENGTH, 0.11, -paintWidth / 2),
+    new THREE.Vector3(COURT_HALF_LENGTH, 0.11, paintWidth / 2),
+    new THREE.Vector3(rightFreeThrowLineX, 0.11, paintWidth / 2),
+    new THREE.Vector3(rightFreeThrowLineX, 0.11, -paintWidth / 2),
+    new THREE.Vector3(COURT_HALF_LENGTH, 0.11, -paintWidth / 2) // Close the rectangle
+  ];
+  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(rightKeyPoints), lineMaterial));
+
+  // Free Throw Arcs (upper part of the circle)
+  const freeThrowArcSegments = 60;
+
+  // Left Free Throw Arc (centered on the free throw line at Z=0)
+  const leftFTArcPoints = [];
+  for (let i = 0; i <= freeThrowArcSegments; i++) {
+    const theta = (i / freeThrowArcSegments) * Math.PI; // Half circle (from 0 to PI)
+    leftFTArcPoints.push(new THREE.Vector3(
+      leftFreeThrowLineX, // X-coordinate of the free-throw line
+      0.11,
+      Math.cos(theta) * freeThrowCircleRadius // Z-coordinate from center (0)
+    ));
+  }
+  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(leftFTArcPoints), lineMaterial));
+
+
+  // Right Free Throw Arc (centered on the free throw line at Z=0)
+  const rightFTArcPoints = [];
+  for (let i = 0; i <= freeThrowArcSegments; i++) {
+    const theta = (i / freeThrowArcSegments) * Math.PI; // Half circle (from 0 to PI)
+    rightFTArcPoints.push(new THREE.Vector3(
+      rightFreeThrowLineX, // X-coordinate of the free-throw line
+      0.11,
+      Math.cos(theta) * freeThrowCircleRadius // Z-coordinate from center (0)
+    ));
+  }
+  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(rightFTArcPoints), lineMaterial));
+
+  // No-charge semi-circle (restricted area arc)
+  const noChargeRadius = 1.25; // 1.25m from the center of the hoop
+  const noChargeSegments = 30;
+
+  // Left No-Charge Semi-Circle
+  // Centered at the hoop's X position, Z=0
+  const leftNoChargeArcPoints = [];
+  for (let i = -Math.PI / 2; i <= Math.PI / 2; i += Math.PI / noChargeSegments) { // Arc from -90 to +90 degrees
+    leftNoChargeArcPoints.push(new THREE.Vector3(
+      LEFT_HOOP_X + Math.cos(i) * noChargeRadius, // X coord: X_hoop + radius * cos(angle)
+      0.11,
+      Math.sin(i) * noChargeRadius // Z coord: radius * sin(angle)
+    ));
+  }
+  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(leftNoChargeArcPoints), lineMaterial));
+
+  // Right No-Charge Semi-Circle
+  const rightNoChargeArcPoints = [];
+  for (let i = -Math.PI / 2; i <= Math.PI / 2; i += Math.PI / noChargeSegments) { // Arc from -90 to +90 degrees
+    rightNoChargeArcPoints.push(new THREE.Vector3(
+      RIGHT_HOOP_X - Math.cos(i) * noChargeRadius, // X coord: X_hoop - radius * cos(angle) (mirrored)
+      0.11,
+      Math.sin(i) * noChargeRadius // Z coord
+    ));
+  }
+  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(rightNoChargeArcPoints), lineMaterial));
 }
 
 function addBasketball() {
