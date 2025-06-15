@@ -100,7 +100,7 @@ function createBasketballHoop(xPosition) {
   });
 
  const backboardTextureLoader = new THREE.TextureLoader();
-  backboardTextureLoader.load('./src/backboard_logo.jpeg', 
+  backboardTextureLoader.load('./src/images/backboard_logo.jpeg', 
       function(loadedTexture) {
           backboardMaterial.map = loadedTexture;
           backboardMaterial.needsUpdate = true;
@@ -234,7 +234,7 @@ function createBasketballCourt() {
   });
 
   const textureLoader = new THREE.TextureLoader();
-  const woodTexture = textureLoader.load('./src/wood_texture.jpg',
+  const woodTexture = textureLoader.load('./src/images/wood_texture.jpg',
     function(loadedTexture) { 
       loadedTexture.wrapS = THREE.RepeatWrapping;
       loadedTexture.wrapT = THREE.RepeatWrapping;
@@ -348,7 +348,7 @@ function createScoreboard() {
     const logoTextureLoader = new THREE.TextureLoader();
     const logoPlaneWidth = boardWidth * 0.6; 
     const logoPlaneHeight = boardHeight * 0.8; 
-    logoTextureLoader.load('./src/scoreboard_logo.jpeg', 
+    logoTextureLoader.load('./src/images/scoreboard_logo.jpeg', 
         function(logoTexture) {
             const logoMaterial = new THREE.MeshBasicMaterial({ map: logoTexture, transparent: true });
             const logoGeometry = new THREE.PlaneGeometry(logoPlaneWidth, logoPlaneHeight);
@@ -608,7 +608,7 @@ function addBasketball() {
   // Ball geometry and material
   const ballGeometry = new THREE.SphereGeometry(ballRadius, 32, 32);  	
   const textureLoader = new THREE.TextureLoader();
-  const basketballTexture = textureLoader.load('./src/basketball_texture.jpg',
+  const basketballTexture = textureLoader.load('./src/images/basketball_texture.jpg',
     undefined, 
     undefined, 
     function (err) {

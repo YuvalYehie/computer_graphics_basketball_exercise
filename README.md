@@ -60,17 +60,21 @@ Clean CSS styling
 - The images must be placed in the src directory. If missing, a fallback is used.
 
 ## Screenshots
-![Overall view of the basketball court with hoops](screenshots/Overall_view.png)
 
-![Overall view 2 of the basketball court with hoops](screenshots/Overall_view2.png)
+### Overall view
+<img src="screenshots/Overall_view.png" width="800"/>
 
-![Close-up view of basketball hoop 1 with nets](screenshots/basketball_hoop1.png)
+### Basketball hoop 1
+<img src="screenshots/basketball_hoop1.png" width="400"/>
 
-![Close-up view of basketball hoop 2 with nets](screenshots/basketball_hoop2.png)
+### Basketball hoop 2
+<img src="screenshots/basketball_hoop2.png" width="400"/>
 
-![View showing the basketball positioned at center court](screenshots/basketball_positioned.png)
+### Basketball positioned
+<img src="screenshots/basketball_positioned.png" width="600"/>
 
-![View demonstrating camera controls functionality](screenshots/camera_controls_functionality.png)
+### Camera controls functionality
+<img src="screenshots/camera_controls_functionality.png" width="600"/>
 
 
 
