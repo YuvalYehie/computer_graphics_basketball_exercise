@@ -119,22 +119,21 @@ function createBasketballHoop(xPosition) {
   const backboard = new THREE.Mesh(backboardGeometry, backboardMaterial);
   
   // Position backboard
-  const RIM_OFFSET = 0.15; 
-  backboard.position.set(0, HOOP_HEIGHT + 0.5, -RIM_OFFSET);
+  const RIM_OFFSET = -0.45; 
+  backboard.position.set(0, HOOP_HEIGHT + 0.2, -0.9);
   
   backboard.castShadow = true;
   backboard.receiveShadow = true;
   hoopGroup.add(backboard);
 
-  // 2. Rim (orange) at the correct regulation height
-  // Using a TorusGeometry for the rim
+  // 2. Rim (orange) 
   const rimGeometry = new THREE.TorusGeometry(RIM_RADIUS, 0.04, 16, 64);
   const rimMaterial = new THREE.MeshPhongMaterial({
     color: 0xff4500, 
     shininess: 80
   });
   const rim = new THREE.Mesh(rimGeometry, rimMaterial);
-  rim.rotation.x = Math.PI / 2; // Rotate to be horizontal
+  rim.rotation.x = Math.PI / 2; 
   
   // Position rim in front of backboard
   rim.position.set(0, HOOP_HEIGHT, RIM_OFFSET);
@@ -181,7 +180,7 @@ function createBasketballHoop(xPosition) {
       hoopGroup.add(ring);
   }
 
-  // 4. Support structure (pole and arms) correctly positioned behind the backboard
+  // 4. Support structure (pole and arms) 
   // Pole
   const poleGeometry = new THREE.CylinderGeometry(POLE_RADIUS, POLE_RADIUS, POLE_HEIGHT, 32);
   const poleMaterial = new THREE.MeshPhongMaterial({ color: 0x808080 }); // Gray
@@ -348,13 +347,14 @@ function createScoreboard() {
     // Scoreboard Logo
     const logoTextureLoader = new THREE.TextureLoader();
     const logoPlaneWidth = boardWidth * 0.6; 
-    const logoPlaneHeight = boardHeight * 1.0; 
+    const logoPlaneHeight = boardHeight * 0.8; 
     logoTextureLoader.load('./src/scoreboard_logo.jpeg', 
         function(logoTexture) {
             const logoMaterial = new THREE.MeshBasicMaterial({ map: logoTexture, transparent: true });
             const logoGeometry = new THREE.PlaneGeometry(logoPlaneWidth, logoPlaneHeight);
             const logoMesh = new THREE.Mesh(logoGeometry, logoMaterial);
-            logoMesh.position.set(0, boardHeight * 0.8, boardThickness / 2 + 0.01);
+            logoMesh.position.set(0, boardHeight * 0.8, -boardThickness / 2 - 0.01);
+            logoMesh.rotation.y = Math.PI; 
             scoreboardGroup.add(logoMesh);
             console.log('Scoreboard logo loaded successfully!');
         },
@@ -433,7 +433,6 @@ document.addEventListener('keydown', handleKeyDown);
 function animate() {
   requestAnimationFrame(animate);
 
-  // Update controls
   controls.enabled = isOrbitEnabled;
   controls.update();
 
