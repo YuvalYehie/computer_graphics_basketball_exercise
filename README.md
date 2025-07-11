@@ -60,11 +60,11 @@ The following advanced features were implemented in addition to the required one
 4. Sound Effects:
     - Realistic audio cues for shooting, bouncing, and scoring enhance immersion.
 5. Ball Trail Effect:
-    A visual trail follows the basketball in flight, improving shot clarity and aesthetics.
+    - A visual trail follows the basketball in flight, improving shot clarity and aesthetics.
 
 
-## Video 
-  <source src="video/basketball.mov" type="video/quicktime">
+## Video (Can also be found in /video)
+  [🎥 Watch Demo Video](https://drive.google.com/file/d/1CfT1OP12MGchsIzELYS-OKe2FxyfUGwU/view?usp=sharing)
 
 
 # Computer Graphics - Exercise 5 - WebGL Basketball Court
