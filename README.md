@@ -48,7 +48,7 @@ Mandatory Interactive and Physics-Based Features
 6. External Assets:
     - Sound effects for shot success/failure (can be found in source/audio)
     
-Bonus Features 
+## Bonus Features 
 The following advanced features were implemented in addition to the required ones:
 
 1. Multiple Hoops:
