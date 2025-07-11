@@ -65,7 +65,6 @@ The following advanced features were implemented in addition to the required one
 
 ## Video 
   <source src="video/basketball.mov" type="video/quicktime">
-  - Also can be found in file
 
 
 # Computer Graphics - Exercise 5 - WebGL Basketball Court
