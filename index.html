@@ -11,19 +11,6 @@
 				color: white;
 			}
 
-			#score-container {
-			position: absolute;
-			top: 20px;
-			left: 20px;
-			font-size: clamp(1rem, 2vw, 2rem);
-			color: white;
-			background: rgba(0,0,0,0.5);
-			padding: 6px 12px;
-			border-radius: 8px;
-			font-weight: bold;
-  			text-shadow: 1px 1px 3px #000;
-			}
-
 			#controls-container {
 			position: absolute;
 			bottom: 20px;
@@ -39,6 +26,21 @@
   			box-shadow: 0 0 6px #0008;
 			}
 
+			#statistics-container {
+			position: absolute;
+			bottom: 20px;
+			right: 20px;
+			font-size: 1em;
+			color: white;
+			background: rgba(0, 0, 0, 0.5);
+			padding: 12px;
+			border-radius: 8px;
+			line-height: 1.6em;
+			max-width: 250px;
+			border: 1px solid #fff2;
+  			box-shadow: 0 0 6px #0008;
+			}
+
 			#controls-container ul {
 			padding-left: 20px;
 			margin: 0;
@@ -46,13 +48,58 @@
 			#controls-container li {
 			margin-bottom: 6px;
 			}
+
+			#shot-message {
+			position: fixed;
+			top: -100px; /* Start above the screen */
+			left: 50%;
+			transform: translateX(-50%);
+			font-size: 3em;
+			font-weight: bold;
+			font-family: Arial, sans-serif;
+			text-align: center;
+			opacity: 0;
+			transition: all 0.8s ease-out;
+			pointer-events: none;
+			z-index: 1000;
+			text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+			width: 100%;
+			}
+
+			#shot-message.show {
+			opacity: 1;
+			top: 50%; /* Center of viewport */
+			transform: translate(-50%, -50%);
+			}
+
+			#shot-message.hide {
+			opacity: 0;
+			top: 100%; /* Animate to bottom of screen */
+			transform: translateX(-50%);
+			}
+
+			#shot-message.made {
+			color: #00ff00;
+			}
+
+			#shot-message.missed {
+			color: #ff0000;
+			}
+
+			#shot-message.challenge-start {
+			color: #ff1493;
+			font-size: 2.5em;
+			}
+
+			#shot-message.challenge-end {
+			color: #ffaa44;
+			font-size: 2.5em;
+			}
 		</style>		
 		<script src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'></script>
 	</head>
 	<body>
 		<script src="src/hw5.js" type="module"></script>
-		<div id="score-container">Score: <strong><span id="score">0</span></strong></div>
-
 		<div id="controls-container">
 		<strong>Controls:</strong>
 		<ul>
@@ -61,7 +108,22 @@
 			<li>W/S – Adjust shot power</li>
 			<li>SPACE – Shoot ball</li>
 			<li>R – Reset ball</li>
+			<li>T – Start time challenge</li>
 		</ul>
 		</div>
+
+		<div id="statistics-container">
+		<strong>Statistics:</strong>
+		<div style="margin-top: 8px;">
+			<div>Total Score: <span id="total-score">0</span></div>
+			<div>Shot Attempts: <span id="shot-attempts">0</span></div>
+			<div>Shots Made: <span id="shots-made">0</span></div>
+			<div>Shooting Success: <span id="shooting-percentage">0.0%</span></div>
+			<div>Current Streak: <span id="current-streak">0</span></div>
+			<div>Best Streak: <span id="best-streak">0</span></div>
+		</div>
+		</div>
+
+		<div id="shot-message"></div>
 	</body>
 </html>
